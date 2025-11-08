@@ -18,7 +18,7 @@ int main() {
     }
     cout << "UDP сокет успешно создан" << endl;
 
-    char msg[] = "Test message\n";
+    char msg[] = "DAYTIME REQUEST";
     int rc = sendto(s, msg, sizeof(msg), 0, (const sockaddr*)&server_addr, sizeof(sockaddr_in));
 
     if (rc == -1) {
@@ -27,6 +27,19 @@ int main() {
         return 1;
     }
     cout << "Сообщение успешно отправлено" << endl;
+
+    char buf[256];
+    socklen_t len = sizeof(sockaddr_in);
+    rc = recvfrom(s, buf, sizeof(buf), 0, (sockaddr*)&server_addr, &len);
+    if (rc == -1) {
+        cerr << "Ошибка приема ответа" << endl;
+        close(s);
+        return 1;
+    }
+
+    cout << "Получено от сервера: ";
+    cout.write(buf, rc);
+    cout << endl;
 
     close(s);
     return 0;
